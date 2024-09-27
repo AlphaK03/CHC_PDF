@@ -5,7 +5,7 @@ class AppView:
     def __init__(self, root):
         self.root = root
 
-        # Estas funciones serán asignadas más tarde en main.py
+
         self.iniciar_monitoreo = None
         self.detener_monitoreo = None
         self.seleccionar_carpeta = None
@@ -17,10 +17,10 @@ class AppView:
 
     def build_interface(self):
         self.root.title("Monitoreo de Archivos PDF")
-        self.root.geometry("700x500")  # Ajustamos el tamaño de la ventana
+        self.root.geometry("700x500")
         self.root.resizable(False, False)  # Deshabilitamos el cambio de tamaño
 
-        # Aplicamos un tema más moderno usando ttk
+
         style = ttk.Style()
         style.theme_use("clam")  # Puedes probar con otros temas: "clam", "alt", "default"
 
