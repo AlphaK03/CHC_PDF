@@ -4,9 +4,11 @@ import pandas as pd
 import re
 from .config_manager import guardar_archivos_procesados
 
-# Expresión regular para encontrar palabras con el formato 4 dígitos + 4 letras
-patron = re.compile(r'\b\d{4}[a-zA-Z]{4}\b')
-
+# Lista de patrones para diferentes casos
+patrones = [
+    re.compile(r'\b\d{4}[a-zA-Z]{8}\b'),  # Caso sin espacios: 1234ABCDEFGH
+    re.compile(r'\b\d{4} [a-zA-Z]{8}\b')  # Caso con espacio entre números y letras: 1234 ABCDEFGH
+]
 
 def procesar_pdf(ruta_pdf, archivo_csv, processed_files, config_dir):
     archivo_nombre = os.path.basename(ruta_pdf)
@@ -23,10 +25,17 @@ def procesar_pdf(ruta_pdf, archivo_csv, processed_files, config_dir):
             for pagina in pdf.pages:
                 texto = pagina.extract_text()
                 if texto:
-                    # Buscar todas las palabras que cumplen el patrón
-                    palabras_encontradas = patron.findall(texto)
-                    for palabra in palabras_encontradas:
-                        resultados.append([archivo_nombre, palabra])
+                    # Intentamos encontrar palabras con las expresiones regulares definidas
+                    palabras_encontradas = []
+                    for patron in patrones:
+                        palabras_encontradas.extend(patron.findall(texto))
+
+                    # Si se encuentran palabras, las añadimos a los resultados
+                    if palabras_encontradas:
+                        for palabra in palabras_encontradas:
+                            # Limpiamos la palabra si es necesario (por ejemplo, quitamos espacios si es el caso con espacio)
+                            palabra_limpia = palabra.replace(' ', '')
+                            resultados.append([archivo_nombre, palabra_limpia])
 
             # Guardar los resultados en un archivo CSV
             if resultados:
